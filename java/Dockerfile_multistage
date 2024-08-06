@@ -1,0 +1,30 @@
+# base image
+#---------------Stage 1 started ----------------
+FROM python:3.11 As backend-builder
+
+#working directory
+WORKDIR /app
+
+#copy code in to the container
+COPY . /app
+
+#required library
+RUN pip install Flask
+
+#-------------------stage 2 started --------------------
+
+#get compress image from stage 1
+FROM python:3.11-slim
+
+#working directory
+WORKDIR /app
+
+#copy library from stage 1
+COPY --from=backend-builder /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
+
+#copy code from stage 1
+COPY --from=backend-builder /app /app
+
+# run
+CMD ["python","app.py"]
+
